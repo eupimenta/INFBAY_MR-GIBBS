@@ -1,0 +1,307 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Trabalho - Inferência Bayesiana},
+            pdfauthor={Docente: Renata Souza Bueno; Discente: Ewerson Carneiro Pimenta},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+% grffile has become a legacy package: https://ctan.org/pkg/grffile
+\IfFileExists{grffile.sty}{%
+\usepackage{grffile}
+}{}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Trabalho - Inferência Bayesiana}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \subtitle{Escola Nacional de Ciências Estatísticas (ENCE / IBGE)}
+  \author{Docente: Renata Souza Bueno \\ Discente: Ewerson Carneiro Pimenta}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{Rio de Janeiro, 30, novembro de 2019}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+
+\begin{document}
+\maketitle
+
+\begin{quote}
+Esse trabalho tem como objetivo verificar o conhecimento e aplicação das
+técnicas da abordagem de inferência bayesiana, utilizando simulação
+interativa através do método MCMC (com o algoritmo de
+Metropolis-Hastings e o amostrador de Gibbs) para encontrar as
+estimativas do parâmetros de uma distribuição a posteriori, cuja
+distribuição dos dados segue distribuição t-Student.
+\end{quote}
+
+\texttt{Data\ de\ entrega:\ 07/12\ (sábado)}
+
+\hypertarget{situauxe7uxe3o-1-distribuiuxe7uxe3o-t-student}{%
+\subsection{Situação 1: Distribuição
+t-Student}\label{situauxe7uxe3o-1-distribuiuxe7uxe3o-t-student}}
+
+Uma variável aleatória \(Y\) tem distribuição t-Student se sua função de
+densidade é dada por
+
+\[
+f(y|\mu,\,\sigma,\,\nu) = \frac{\Gamma(\frac{\nu+1}{2})} {\sqrt{\nu\pi}\,\Gamma(\frac{\nu}{2})} \left(1+\frac{1}{\nu}\left(\frac{y-\mu}{\sigma}\right)^{2} \right)^{\!-\frac{\nu+1}{2}},\,y\in \mathbb{R}\!
+\]
+
+em que \(\mu\in\mathbb{R}\) é um parâmetro de locação, \(\sigma > 0\) é
+um parâmetro de escala e \(\nu >0\) é o parâmetro chamado graus de
+liberdade. Uma representação estocástica, que pode facilitar o uso dessa
+distribuição, é dada por
+
+\[
+Y = \mu + \sigma\frac{V}{\sqrt{U}}
+\]
+
+onde \(V \sim \mathcal{N}(0,\,1)\,\) e
+\(U \sim \mathcal{Gama}(\frac{\nu}{2},\,\frac{\nu}{2})\,\), com \(U\) e
+\(V\) independentes.
+
+Seja \(\pmb{\theta} = (\mu,\,\sigma^{2},\,\nu)\) o vetor de parâmetros.
+E a distribuição a priori para \(\pmb{\theta}\) é tal que:
+
+\[\mathcal{p}(\pmb{\theta}) = \mathcal{p}(\mu)\mathcal{p}(\sigma^{2})\mathcal{p}(\nu)\]
+
+onde \(\mu \sim \mathcal{N}(a,\,b)\,\),
+\(\sigma^{2} \sim \mathcal{GI}(c,\,d)\,\) e
+\(\nu \sim \mathcal{Gama}(e,\,f)\,\)
+
+Simulando uma amostra de \(\pmb{Y} = (Y_1,\,Y_2,\,\ldots,\,Y_n)\) do
+modelo em questão considerando \(n=1000\).
+
+\hypertarget{opuxe7uxe3o-1-considerandoo-paruxe2metro-nu-fixo-usando-amostrador-de-gibbs}{%
+\subsubsection{\texorpdfstring{Opção 1: Considerandoo parâmetro \(\nu\)
+fixo (usando amostrador de
+Gibbs)}{Opção 1: Considerandoo parâmetro \textbackslash nu fixo (usando amostrador de Gibbs)}}\label{opuxe7uxe3o-1-considerandoo-paruxe2metro-nu-fixo-usando-amostrador-de-gibbs}}
+
+\texttt{Sugestão:\ Simule\ os\ dados\ considerando\ \$\textbackslash{}nu\ \textgreater{}\ 2\$.}
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+Resolução
+
+Seja \(\pmb{\theta} = (\mu,\,\sigma^{2},\,\nu)\)
+
+\[
+\begin{align}
+\mathcal{P}(\pmb{Y}|\pmb{\theta}) 
+& = \prod_{i=1}^{n}\mathcal{P}(Y_i|\pmb{\theta}) \\
+& =
+\prod_{i=1}^{n}\mathcal{P}(Y_i|\mu,\,\sigma,\,\nu) \\
+& =
+\prod_{i=1}^{n}\left[\frac{\Gamma(\frac{\nu+1}{2})} {\sqrt{\nu\pi}\,\Gamma(\frac{\nu}{2})} \left(1+\frac{1}{\nu}\left(\frac{y_i-\mu}{\sigma}\right)^{2} \right)^{\!-\frac{\nu+1}{2}}\right] \\
+\end{align}
+\] Logo, não é trivial evoluir utilizando a distribuição de t-Student.
+
+Daí, utilizando a representação estocástica
+\(Y = \mu + \sigma\frac{V}{\sqrt{U}}\) temos que:
+
+\[
+\begin{align}
+\mathcal{P}(\pmb{Y_i}|\pmb{\theta}) = \mathcal{P}(\pmb{Y_i}|\mu,\,\sigma^{2},\,U_i),\, \text{ onde }\nu \text{ é fixado e }\,V\sim\,N(0,1).
+\end{align}
+\] E, portanto,
+\[Yi|\mu,\,\sigma^{2},\,U_i\sim\,Normal(\mu,\frac{\sigma^2}{U_1})
+\]
+
+Agora vamos encontrar o núcleo da distrib. a posteriori e a condicional
+completa.
+
+Encontrando o núcleo da distrib. a posteriori
+
+\[
+\begin{align}
+& \mathcal{P}(\mu,\,\sigma^{2},\,U_i|Y_i) \propto \mathcal{P}(\pmb{Y_i}|\mu,\,\sigma^{2},\,U_i)\mathcal{P}(\mu)\mathcal{P}(\sigma^2)\mathcal{P}(U_i) \\
+& \propto \underbrace{\left(2\pi\frac{\sigma^2}{U_i}\right)^{-\frac{n}{2}}exp\{-\frac{U_i}{2\sigma^2}\sum_{i=1}^{n}(y_i-\mu)^2\}}_{Normal(\mu,\frac{\sigma^2}{U_1})} \underbrace{\left(2\pi\,b\right)^{-\frac{1}{2}}exp\{-\frac{1}{2b}(\mu-a)^2\}}_{\mathcal{N}(a,\,b)} \\
+& \underbrace{\frac{d^c}{\Gamma(c)}(\sigma^2)^{-(c+1)}e^{\frac{-d}{\sigma^2}}}_{\mathcal{GI}(c,\,d)} \underbrace{\frac{\left(\frac{\nu}{2}\right)^{\frac{\nu}{2}}}{\Gamma(\frac{\nu}{2})}U_i^{\frac{\nu}{2}-1}exp\{-\frac{\nu}{2}U_i\}}_{\mathcal{Gama}(\frac{\nu}{2},\,\frac{\nu}{2})}
+\end{align}
+\]
+
+\$\$ \begin{align}
+\mathcal{P}(\pmb{Y}|\pmb{\theta}) 
+& = \prod_{i=1}^{n}\mathcal{P}(Y_i|\pmb{\theta}) \\
+& =
+
+\end{align} \$\$
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Fixando os valores:}
+\NormalTok{mu.real<-}\StringTok{ }\DecValTok{5}
+\NormalTok{sigma.real<-}\FloatTok{2.27}
+\NormalTok{nu.real<-}\StringTok{ }\DecValTok{7}
+
+\CommentTok{# Gerando os dados:}
+\NormalTok{dados<-}\OtherTok{NULL}
+\NormalTok{n<-}\DecValTok{1000}
+\KeywordTok{library}\NormalTok{(metRology)}
+\NormalTok{dados<-}\KeywordTok{rt.scaled}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DataTypeTok{df=}\NormalTok{nu.real, }\DataTypeTok{mean=}\NormalTok{mu.real, }\DataTypeTok{sd=}\NormalTok{sigma.real)}
+
+\CommentTok{# Plot da função de densidade e histograma dos dados}
+\NormalTok{bin =}\StringTok{ }\DecValTok{50}
+\KeywordTok{require}\NormalTok{(graphics)}
+\KeywordTok{hist}\NormalTok{(dados,}\DataTypeTok{breaks=}\NormalTok{bin, }\DataTypeTok{probability=}\OtherTok{TRUE}\NormalTok{, }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.25}\NormalTok{),}
+     \DataTypeTok{main =} \StringTok{"Histograma dos dados"}\NormalTok{, }\DataTypeTok{col=}\KeywordTok{rainbow}\NormalTok{(bin, }\DataTypeTok{start =} \FloatTok{.78}\NormalTok{), }\DataTypeTok{ylab =} \StringTok{"F.D.P."}\NormalTok{)}
+\NormalTok{x<-}\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{25}\NormalTok{, }\FloatTok{0.05}\NormalTok{)}
+\KeywordTok{lines}\NormalTok{(x,}\KeywordTok{dt.scaled}\NormalTok{(x,}\DataTypeTok{df =}\NormalTok{ nu.real, }\DataTypeTok{mean=}\NormalTok{mu.real,}
+                  \DataTypeTok{sd=}\NormalTok{sigma.real), }\DataTypeTok{col=}\StringTok{"purple"}\NormalTok{, }\DataTypeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{script_files/figure-latex/unnamed-chunk-1-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{##### Algoritmo de Gibbs}
+\CommentTok{# Inicializando os vetores}
+\NormalTok{mu<-}\OtherTok{NULL}
+\NormalTok{sigma<-}\OtherTok{NULL}
+\NormalTok{nu<-}\OtherTok{NULL}
+\NormalTok{ite<-}\DecValTok{10000}
+\NormalTok{n<-}\KeywordTok{length}\NormalTok{(dados)}
+\NormalTok{prob.aux<-}\OtherTok{NULL}
+
+\CommentTok{# Valores iniciais}
+\NormalTok{mu[}\DecValTok{1}\NormalTok{]<-}\DecValTok{1}
+\NormalTok{sigma[}\DecValTok{1}\NormalTok{]<-}\DecValTok{1}
+\NormalTok{nu[}\DecValTok{1}\NormalTok{]<-}\DecValTok{1}
+
+\CommentTok{# Hiperparâmetros}
+\NormalTok{a<-}\DecValTok{1}
+\NormalTok{b<-}\FloatTok{0.1}
+\NormalTok{c<-}\DecValTok{1}
+\NormalTok{d<-}\FloatTok{0.1}  
+\NormalTok{e<-}\DecValTok{1}
+\NormalTok{f<-}\FloatTok{0.1}
+
+\CommentTok{# MCMC}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}

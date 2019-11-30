@@ -1,0 +1,157 @@
+---
+title: "Trabalho - Inferência Bayesiana"
+subtitle: "Escola Nacional de Ciências Estatísticas (ENCE / IBGE)"
+author: 
+- "Docente: Renata Souza Bueno"
+- "Discente: Ewerson Carneiro Pimenta"
+date: "`r format(Sys.time(), 'Rio de Janeiro, %d, %B de %Y')`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+---
+
+<!----------  CONFIGURACAO  ---------->
+
+```{r OPCOES-GLOBAIS, echo = FALSE, eval = TRUE, message=FALSE, include = FALSE}
+options(Encoding="UTF-8")
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r PACOTES, echo = FALSE, eval = TRUE, message=FALSE, include = FALSE}
+library(knitr)
+library(knitLatex)
+library(kableExtra)
+library(tidyverse)
+```
+
+> Esse trabalho tem como objetivo verificar o conhecimento e aplicação das técnicas da abordagem de inferência bayesiana, utilizando simulação interativa através do método MCMC (com o algoritmo de Metropolis-Hastings e o amostrador de Gibbs) para encontrar as estimativas do parâmetros de uma distribuição a posteriori, cuja distribuição dos dados segue distribuição t-Student.
+
+`Data de entrega: 07/12 (sábado)`
+
+## Situação 1: Distribuição t-Student
+Uma variável aleatória $Y$ tem distribuição t-Student se sua função de densidade é dada por
+
+$$
+f(y|\mu,\,\sigma,\,\nu) = \frac{\Gamma(\frac{\nu+1}{2})} {\sqrt{\nu\pi}\,\Gamma(\frac{\nu}{2})} \left(1+\frac{1}{\nu}\left(\frac{y-\mu}{\sigma}\right)^{2} \right)^{\!-\frac{\nu+1}{2}},\,y\in \mathbb{R}\!
+$$
+
+em que $\mu\in\mathbb{R}$ é um parâmetro de locação, $\sigma > 0$ é um parâmetro de escala e $\nu >0$ é o parâmetro chamado graus de liberdade. Uma representação estocástica, que pode facilitar o uso dessa distribuição, é dada por
+
+$$
+Y = \mu + \sigma\frac{V}{\sqrt{U}}
+$$
+
+onde $V \sim \mathcal{N}(0,\,1)\,$ e $U \sim \mathcal{Gama}(\frac{\nu}{2},\,\frac{\nu}{2})\,$, com $U$ e $V$ independentes.
+
+Seja $\pmb{\theta} = (\mu,\,\sigma^{2},\,\nu)$ o vetor de parâmetros. E a distribuição a priori para $\pmb{\theta}$ é tal que:
+
+$$\mathcal{p}(\pmb{\theta}) = \mathcal{p}(\mu)\mathcal{p}(\sigma^{2})\mathcal{p}(\nu)$$
+
+
+onde $\mu \sim \mathcal{N}(a,\,b)\,$, $\sigma^{2} \sim \mathcal{GI}(c,\,d)\,$ e $\nu \sim \mathcal{Gama}(e,\,f)\,$
+
+Simulando uma amostra de $\pmb{Y} = (Y_1,\,Y_2,\,\ldots,\,Y_n)$ do modelo em questão considerando $n=1000$.
+
+### Opção 1: Considerandoo parâmetro $\nu$ fixo (usando amostrador de Gibbs)
+
+`Sugestão: Simule os dados considerando $\nu > 2$.`
+
+-----------------
+Resolução
+
+Seja $\pmb{\theta} = (\mu,\,\sigma^{2},\,\nu)$
+
+$$
+\begin{align}
+\mathcal{P}(\pmb{Y}|\pmb{\theta}) 
+& = \prod_{i=1}^{n}\mathcal{P}(Y_i|\pmb{\theta}) \\
+& =
+\prod_{i=1}^{n}\mathcal{P}(Y_i|\mu,\,\sigma,\,\nu) \\
+& =
+\prod_{i=1}^{n}\left[\frac{\Gamma(\frac{\nu+1}{2})} {\sqrt{\nu\pi}\,\Gamma(\frac{\nu}{2})} \left(1+\frac{1}{\nu}\left(\frac{y_i-\mu}{\sigma}\right)^{2} \right)^{\!-\frac{\nu+1}{2}}\right] \\
+\end{align}
+$$
+Logo, não é trivial evoluir utilizando a distribuição de t-Student.
+
+Daí, utilizando a representação estocástica $Y = \mu + \sigma\frac{V}{\sqrt{U}}$ temos que:
+
+$$
+\begin{align}
+\mathcal{P}(\pmb{Y_i}|\pmb{\theta}) = \mathcal{P}(\pmb{Y_i}|\mu,\,\sigma^{2},\,U_i),\, \text{ onde }\nu \text{ é fixado e }\,V\sim\,N(0,1).
+\end{align}
+$$
+E, portanto, 
+$$Yi|\mu,\,\sigma^{2},\,U_i\sim\,Normal(\mu,\frac{\sigma^2}{U_1})
+$$
+
+Agora vamos encontrar o núcleo da distrib. a posteriori e a condicional completa.
+
+Encontrando o núcleo da distrib. a posteriori
+
+$$
+\begin{align}
+& \mathcal{P}(\mu,\,\sigma^{2},\,U_i|Y_i) \propto \mathcal{P}(\pmb{Y_i}|\mu,\,\sigma^{2},\,U_i)\mathcal{P}(\mu)\mathcal{P}(\sigma^2)\mathcal{P}(U_i) \\
+& \propto \underbrace{\left(2\pi\frac{\sigma^2}{U_i}\right)^{-\frac{n}{2}}exp\{-\frac{U_i}{2\sigma^2}\sum_{i=1}^{n}(y_i-\mu)^2\}}_{Normal(\mu,\frac{\sigma^2}{U_1})} \underbrace{\left(2\pi\,b\right)^{-\frac{1}{2}}exp\{-\frac{1}{2b}(\mu-a)^2\}}_{\mathcal{N}(a,\,b)} \\
+& \underbrace{\frac{d^c}{\Gamma(c)}(\sigma^2)^{-(c+1)}e^{\frac{-d}{\sigma^2}}}_{\mathcal{GI}(c,\,d)} \underbrace{\frac{\left(\frac{\nu}{2}\right)^{\frac{\nu}{2}}}{\Gamma(\frac{\nu}{2})}U_i^{\frac{\nu}{2}-1}exp\{-\frac{\nu}{2}U_i\}}_{\mathcal{Gama}(\frac{\nu}{2},\,\frac{\nu}{2})}
+\end{align}
+$$
+
+$$
+\begin{align}
+\mathcal{P}(\pmb{Y}|\pmb{\theta}) 
+& = \prod_{i=1}^{n}\mathcal{P}(Y_i|\pmb{\theta}) \\
+& =
+
+\end{align}
+$$
+
+```{r, message=FALSE, warning=FALSE}
+# Fixando os valores:
+mu.real<- 5
+sigma.real<-2.27
+nu.real<- 7
+
+# Gerando os dados:
+dados<-NULL
+n<-1000
+library(metRology)
+dados<-rt.scaled(1000, df=nu.real, mean=mu.real, sd=sigma.real)
+
+# Plot da função de densidade e histograma dos dados
+bin = 50
+require(graphics)
+hist(dados,breaks=bin, probability=TRUE, ylim = c(0,0.25),
+     main = "Histograma dos dados", col=rainbow(bin, start = .78), ylab = "F.D.P.")
+x<-seq(0,25, 0.05)
+lines(x,dt.scaled(x,df = nu.real, mean=mu.real,
+                  sd=sigma.real), col="purple", lwd = 2)
+```
+
+```{r}
+##### Algoritmo de Gibbs
+# Inicializando os vetores
+mu<-NULL
+sigma<-NULL
+nu<-NULL
+ite<-10000
+n<-length(dados)
+prob.aux<-NULL
+
+# Valores iniciais
+mu[1]<-1
+sigma[1]<-1
+nu[1]<-1
+
+# Hiperparâmetros
+a<-1
+b<-0.1
+c<-1
+d<-0.1  
+e<-1
+f<-0.1
+
+# MCMC
+```
+
